@@ -1,11 +1,12 @@
-import httpStatus from "http-status";
-import Auth from "../models/auth";
-import mailer from "./mailer";
-import encription from "../generator/encription";
-import GenerateEmail from "./email";
-import OTP from "../models/otp";
-import generator from "../generator/genetator";
-import moment from "moment";
+import httpStatus from 'http-status';
+import Auth from '../models/auth';
+import mailer from './mailer';
+import encription from '../generator/encription';
+import GenerateEmail from './email';
+import OTP from '../models/otp';
+import generator from '../generator/genetator';
+import moment from 'moment';
+import {where} from 'sequelize';
 
 interface RegisterAuth {
   email: string;
@@ -28,22 +29,22 @@ const authLogin = async (email: string, password: string) => {
     if (!emailExist)
       return {
         code: httpStatus.BAD_REQUEST,
-        message: "Invalid login credentials",
+        message: 'Invalid login credentials',
       };
 
-    const auth = await Auth.findOne({ where: { email } });
+    const auth = await Auth.findOne({where: {email}});
     if (auth) {
       if (!auth.isVerified) {
         return {
           code: httpStatus.LOCKED,
           message: `Email ${email} is not yet verified`,
-          redirect: "AUTHACTIVATESCREEN",
+          redirect: 'AUTHACTIVATESCREEN',
         };
       }
       if (!(await encription.isPasswordMatch(password, auth.password))) {
         return {
           code: httpStatus.BAD_REQUEST,
-          message: "Invalid login credentials",
+          message: 'Invalid login credentials',
         };
       }
       return {
@@ -52,28 +53,28 @@ const authLogin = async (email: string, password: string) => {
           auth.id,
           auth.email,
           generator.accessTokenExpires,
-          auth.role
+          auth.role,
         ),
-        redirect: "DashboardScreen",
+        redirect: 'DashboardScreen',
       };
     }
 
     return {
       code: httpStatus.BAD_REQUEST,
-      message: "There is something in a login service",
-      redirect: "AuthErrorScreen",
+      message: 'There is something in a login service',
+      redirect: 'AuthErrorScreen',
     };
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-      redirect: "AuthErrorScreen",
+      message: 'Internal server error',
+      redirect: 'AuthErrorScreen',
     };
   }
 };
 
 const checkEmail = async (email: string): Promise<boolean> => {
-  const exist = await Auth.findOne({ where: { email } });
+  const exist = await Auth.findOne({where: {email}});
   if (exist) return true;
   return false;
 };
@@ -90,23 +91,23 @@ const resendOTP = async (email: string) => {
     const otp = generator.randomNumber(6);
 
     const successUpdate = await OTP.update(
-      { otp, expiration: generator.expiration() },
+      {otp, expiration: generator.expiration()},
       {
         where: {
           email,
         },
-      }
+      },
     );
 
     if (successUpdate) {
       const mailOptions = {
         from: '"Tarlac Agricultural University" <admin@tau.edu.ph>',
         to: email,
-        subject: "Resend verification code",
-        text: "Greetings from Tarlac Agricultural University",
+        subject: 'Resend verification code',
+        text: 'Greetings from Tarlac Agricultural University',
         html: GenerateEmail({
           message: `Hi, ${
-            email.split("@")[0]
+            email.split('@')[0]
           } Here is your new OTP : ${otp} to activate your account.`,
         }),
       };
@@ -117,19 +118,19 @@ const resendOTP = async (email: string) => {
       return {
         code: httpStatus.OK,
         message: `We send new otp in your email ${email}, please check and activated your account`,
-        redirect: "AuthActivateScreen",
+        redirect: 'AuthActivateScreen',
       };
     }
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-      redirect: "AuthErrorScreen",
+      message: 'Internal server error',
+      redirect: 'AuthErrorScreen',
     };
   }
 };
 
-const activateAuth = async ({ otp, email }: OTPType) => {
+const activateAuth = async ({otp, email}: OTPType) => {
   try {
     const emailExist = await checkEmail(email);
     if (!emailExist)
@@ -137,7 +138,7 @@ const activateAuth = async ({ otp, email }: OTPType) => {
         code: httpStatus.BAD_REQUEST,
         message: `Email ${email} is not registered`,
       };
-    const otpExist = await OTP.findOne({ where: { email } });
+    const otpExist = await OTP.findOne({where: {email}});
 
     if (otpExist?.otp !== otp)
       return {
@@ -156,12 +157,12 @@ const activateAuth = async ({ otp, email }: OTPType) => {
       };
 
     const successUpdate = await Auth.update(
-      { isVerified: true },
+      {isVerified: true},
       {
         where: {
           email,
         },
-      }
+      },
     );
     if (successUpdate) {
       const deleteOtp = await OTP.destroy({
@@ -173,29 +174,29 @@ const activateAuth = async ({ otp, email }: OTPType) => {
         return {
           code: httpStatus.OK,
           message: `Successfully activate your account ${email}`,
-          redirect: "AUTHLOGINSCREEN",
+          redirect: 'AUTHLOGINSCREEN',
         };
       return {
         code: httpStatus.BAD_REQUEST,
-        message: "There is something wrong in our end",
-        redirect: "AuthErrorScreen",
+        message: 'There is something wrong in our end',
+        redirect: 'AuthErrorScreen',
       };
     }
     return {
       code: httpStatus.BAD_REQUEST,
-      response: "There is something wrong in our end",
-      redirect: "AuthErrorScreen",
+      response: 'There is something wrong in our end',
+      redirect: 'AuthErrorScreen',
     };
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-      redirect: "AuthErrorScreen",
+      message: 'Internal server error',
+      redirect: 'AuthErrorScreen',
     };
   }
 };
 
-const registerAuth = async ({ email, mobile, password }: RegisterAuth) => {
+const registerAuth = async ({email, mobile, password}: RegisterAuth) => {
   try {
     const authExist = await checkEmail(email);
     if (authExist)
@@ -209,7 +210,7 @@ const registerAuth = async ({ email, mobile, password }: RegisterAuth) => {
       email,
       mobile,
       password: await encription.encryptPassword(password),
-      role: "user",
+      role: 'user',
       isVerified: false,
     });
 
@@ -225,11 +226,11 @@ const registerAuth = async ({ email, mobile, password }: RegisterAuth) => {
         const mailOptions = {
           from: '"Tarlac Agricultural University" <admin@tau.edu.ph>',
           to: email,
-          subject: "Email verification code",
-          text: "Greetings from Tarlac Agricultural University",
+          subject: 'Email verification code',
+          text: 'Greetings from Tarlac Agricultural University',
           html: GenerateEmail({
             message: `Hi, ${
-              email.split("@")[0]
+              email.split('@')[0]
             } If you've signed up for Electronic Gatepass,
                   you'll find here. The OTP is ${
                     newOTP.otp
@@ -244,15 +245,15 @@ const registerAuth = async ({ email, mobile, password }: RegisterAuth) => {
           code: httpStatus.OK,
           email,
           message: `Successfully registered email ${email}, we send a verfication code in your email please check and activated your account`,
-          redirect: "AUTHACTIVATESCREEN",
+          redirect: 'AUTHACTIVATESCREEN',
         };
       }
     }
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-      redirect: "AuthErrorScreen",
+      message: 'Internal server error',
+      redirect: 'AuthErrorScreen',
     };
   }
 };
@@ -266,50 +267,102 @@ const recoverAccess = async (email: string) => {
         message: `Email ${email} is not registered`,
       };
     const otp = generator.randomNumber(6);
-    const authDetails = await Auth.findOne({ where: { email } });
 
-    if (authDetails) {
-      const newOTP = await OTP.create({
-        email,
-        otp,
-        authId: authDetails.id,
-        expiration: generator.expiration(),
-      });
+    const checkotp = await OTP.findOne({where: {email}});
 
-      if (newOTP) {
-        const mailOptions = {
-          from: '"Tarlac Agricultural University" <admin@tau.edu.ph>',
-          to: email,
-          subject: "Recover Access",
-          text: "Greetings from Tarlac Agricultural University",
-          html: GenerateEmail({
-            message: `Hi, ${
-              email.split("@")[0]
-            } Here is your otp ${otp} to recover your account `,
-          }),
-        };
-        if (mailOptions) {
-          await mailer.sendEmail(mailOptions);
-        }
-
-        return {
-          code: httpStatus.OK,
+    if (checkotp === null) {
+      const authDetails = await Auth.findOne({where: {email}});
+      if (authDetails) {
+        const newOTP = await OTP.create({
           email,
-          message: `We send an otp in your ${email}, please check and recover your account`,
-          redirect: "AuthChangePasswordScreen",
+          otp,
+          authId: authDetails.id,
+          expiration: generator.expiration(),
+        });
+
+        if (newOTP) {
+          const mailOptions = {
+            from: '"Tarlac Agricultural University" <admin@tau.edu.ph>',
+            to: email,
+            subject: 'Recover Access',
+            text: 'Greetings from Tarlac Agricultural University',
+            html: GenerateEmail({
+              message: `Hi, ${
+                email.split('@')[0]
+              } Here is your otp ${otp} to recover your account `,
+            }),
+          };
+          if (mailOptions) {
+            await mailer.sendEmail(mailOptions);
+          }
+
+          return {
+            code: httpStatus.OK,
+            email,
+            message: `We send another otp in your ${email}, please check and recover your account`,
+            redirect: 'AUTHCHANGEPASSWORDSCREEN',
+          };
+        }
+      } else {
+        return {
+          code: httpStatus.BAD_REQUEST,
+          email,
+          message: `Something wrong with the email ${email}`,
+          redirect: 'AuthErrorScreen',
         };
       }
+    }
+
+    const updated = await OTP.update(
+      {otp, expiration: generator.expiration()},
+
+      {
+        where: {
+          email,
+        },
+      },
+    );
+
+    if (updated) {
+      const mailOptions = {
+        from: '"Tarlac Agricultural University" <admin@tau.edu.ph>',
+        to: email,
+        subject: 'Recover Access',
+        text: 'Greetings from Tarlac Agricultural University',
+        html: GenerateEmail({
+          message: `Hi, ${
+            email.split('@')[0]
+          } Here is your otp ${otp} to recover your account `,
+        }),
+      };
+      if (mailOptions) {
+        await mailer.sendEmail(mailOptions);
+      }
+
+      return {
+        code: httpStatus.OK,
+        email,
+        message: `We send an otp in your ${email}, please check and recover your account`,
+        redirect: 'AUTHCHANGEPASSWORDSCREEN',
+      };
+    } else {
+      return {
+        code: httpStatus.BAD_REQUEST,
+        email,
+        message: `Something wrong with the email ${email}`,
+        redirect: 'AuthErrorScreen',
+      };
     }
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-      redirect: "AuthErrorScreen",
+      message: 'Internal server error',
+      redirect: 'AuthErrorScreen',
     };
   }
 };
 
-const changePassword = async ({ email, otp, newpassword }: ChangePass) => {
+const changePassword = async ({email, otp, newpassword}: ChangePass) => {
   try {
     const emailExist = await checkEmail(email);
     if (!emailExist)
@@ -317,7 +370,7 @@ const changePassword = async ({ email, otp, newpassword }: ChangePass) => {
         code: httpStatus.BAD_REQUEST,
         message: `Email ${email} is not registered`,
       };
-    const otpExist = await OTP.findOne({ where: { email } });
+    const otpExist = await OTP.findOne({where: {email}});
 
     if (otpExist?.otp !== otp)
       return {
@@ -336,25 +389,25 @@ const changePassword = async ({ email, otp, newpassword }: ChangePass) => {
       };
 
     const successUpdate = await Auth.update(
-      { password: encription.encryptPassword(newpassword) },
+      {password: encription.encryptPassword(newpassword)},
       {
         where: {
           email,
         },
-      }
+      },
     );
 
     if (successUpdate)
       return {
         code: httpStatus.OK,
         message: `Succesfully update your new password in account ${email}`,
-        redirect: "AuthLoginScreen",
+        redirect: 'AuthLoginScreen',
       };
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-      redirect: "AuthErrorScreen",
+      message: 'Internal server error',
+      redirect: 'AuthErrorScreen',
     };
   }
 };

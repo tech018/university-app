@@ -1,18 +1,13 @@
-import Joi from "joi";
-import dotenv from "dotenv";
-import path from "path";
-dotenv.config({ path: path.join(process.cwd(), ".env") });
+import Joi from 'joi';
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({path: path.join(process.cwd(), '.env')});
 
 const envVarsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string().valid("production", "development").required(),
+    NODE_ENV: Joi.string().valid('production', 'development').required(),
     PORT: Joi.number().default(8000),
-    DB_HOST: Joi.string().default("localhost").required(),
-    DB_DIALECT: Joi.string().required(),
-    DB_USERNAME: Joi.string().required(),
-    DB_DATABASE: Joi.string().required(),
-    DB_PASSWORD: Joi.string().required(),
-    DB_PORT: Joi.number().required(),
+    DB_URI: Joi.string().required(),
     APP_SECRET_KEY: Joi.string().required(),
     CUSTOM_KEY: Joi.string().required(),
     EMAIL_SENDER: Joi.string().required(),
@@ -30,8 +25,8 @@ const envVarsSchema = Joi.object()
   })
   .unknown();
 
-const { value: envVars, error } = envVarsSchema
-  .prefs({ errors: { label: "key" } })
+const {value: envVars, error} = envVarsSchema
+  .prefs({errors: {label: 'key'}})
   .validate(process.env);
 
 if (error) {
@@ -42,14 +37,7 @@ export default {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   app_secret_key: envVars.APP_SECRET_KEY,
-  database: {
-    name: envVars.DB_DATABASE,
-    host: envVars.DB_HOST,
-    dialect: envVars.DB_DIALECT,
-    username: envVars.DB_USERNAME,
-    password: envVars.DB_PASSWORD,
-    port: envVars.DB_PORT,
-  },
+  database: envVars.DB_URI,
   google: {
     sender: envVars.EMAIL_SENDER,
     secret: envVars.EMAIL_SECRET,
