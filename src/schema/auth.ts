@@ -1,5 +1,5 @@
-import { ContainerTypes, ValidatedRequestSchema } from "express-joi-validation";
-import * as Joi from "joi";
+import {ContainerTypes, ValidatedRequestSchema} from 'express-joi-validation';
+import * as Joi from 'joi';
 
 export interface AuthRegisterRequestSchema extends ValidatedRequestSchema {
   [ContainerTypes.Body]: {
@@ -39,7 +39,7 @@ const authResendCodeSchema = Joi.object({
 
 export interface AuthChangePasswordRequestSchema
   extends ValidatedRequestSchema {
-  [ContainerTypes.Body]: {
+  [ContainerTypes.Query]: {
     email: string;
     otp: number;
     newpassword: string;

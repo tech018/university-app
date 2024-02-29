@@ -30,9 +30,9 @@ router
   );
 
 router
-  .route('/changpassword')
+  .route('/changepassword')
   .post(
-    validator.body(validation.authChangePasswordSchema),
+    validator.query(validation.authChangePasswordSchema),
     authModule.changePassword,
   );
 

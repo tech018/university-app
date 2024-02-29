@@ -376,6 +376,7 @@ const changePassword = async ({email, otp, newpassword}: ChangePass) => {
       return {
         code: httpStatus.UNAUTHORIZED,
         message: `OTP ${otp} is invalid`,
+        authCode: 1,
       };
 
     const currentDateTime = moment().utc();
@@ -386,10 +387,11 @@ const changePassword = async ({email, otp, newpassword}: ChangePass) => {
       return {
         code: httpStatus.UNAUTHORIZED,
         message: `Your OTP ${otp} is already expired`,
+        authCode: 1,
       };
 
     const successUpdate = await Auth.update(
-      {password: encription.encryptPassword(newpassword)},
+      {password: await encription.encryptPassword(newpassword)},
       {
         where: {
           email,
@@ -400,10 +402,11 @@ const changePassword = async ({email, otp, newpassword}: ChangePass) => {
     if (successUpdate)
       return {
         code: httpStatus.OK,
-        message: `Succesfully update your new password in account ${email}`,
-        redirect: 'AuthLoginScreen',
+        message: `You have successfully recovered your password in your account ${email}`,
+        redirect: 'AUTHLOGINSCREEN',
       };
   } catch (error) {
+    console.log('error', error);
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'Internal server error',
