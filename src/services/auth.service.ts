@@ -399,12 +399,18 @@ const changePassword = async ({email, otp, newpassword}: ChangePass) => {
       },
     );
 
-    if (successUpdate)
+    if (successUpdate) {
+      await OTP.destroy({
+        where: {
+          email,
+        },
+      });
       return {
         code: httpStatus.OK,
         message: `You have successfully recovered your password in your account ${email}`,
         redirect: 'AUTHLOGINSCREEN',
       };
+    }
   } catch (error) {
     console.log('error', error);
     return {
