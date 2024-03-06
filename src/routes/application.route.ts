@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/requirements')
   .post(
-    validator.query(validation.requirementsSchema),
+    validator.body(validation.requirementsSchema),
     applicationModule.getRequirements,
   );
 
