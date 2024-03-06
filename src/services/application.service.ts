@@ -1,27 +1,27 @@
 import httpStatus from 'http-status';
+import Requirements from '../models/requirements';
 
-function stringToObject(inputString: string): Record<string, string> {
-  return inputString.split('\n').reduce((result, keyValue) => {
-    const [key, value] = keyValue.split(':').map(part => part.trim());
-    result[key] = value;
-    return result;
-  }, {} as Record<string, string>);
-}
-
-const getRequirements = (data: string) => {
+const getRequirements = async (data: string, email: string) => {
   try {
-    const resultObject: Record<string, string> = stringToObject(data);
-
-    console.log('microblink data', resultObject);
-    return {
-      message: 'success',
-      code: httpStatus.OK,
-    };
+    const storeblink = await Requirements.create({drLicense: data, email});
+    if (storeblink) {
+      return {
+        message: `Successfully store driver's license`,
+        code: httpStatus.OK,
+        redirect: 'AUTHLOGINSCREEN',
+      };
+    } else {
+      return {
+        message: `error store driver's license`,
+        code: httpStatus.BAD_REQUEST,
+        redirect: 'AUTHLOGINSCREEN',
+      };
+    }
   } catch (error) {
-    console.log('microblink data error', error);
     return {
       message: error,
       code: httpStatus.INTERNAL_SERVER_ERROR,
+      redirect: 'AuthErrorScreen',
     };
   }
 };
