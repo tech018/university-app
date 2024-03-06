@@ -1,29 +1,16 @@
 import httpStatus from 'http-status';
 
-function stringToObject(inputString: string) {
-  const lines: string[] = inputString.split('\n');
-  const info: Record<string, string> = {};
-
-  // Iterate through each line and extract key-value pairs
-  lines.forEach(line => {
-    // Skip empty lines
-    if (!line.trim()) {
-      return;
-    }
-
-    // Split each line at the colon to separate key and value
-    const [key, value] = line.split(':').map(part => part.trim());
-
-    // Add key-value pairs to the object
-    info[key] = value;
-
-    return info;
-  });
+function stringToObject(inputString: string): Record<string, string> {
+  return inputString.split('\n').reduce((result, keyValue) => {
+    const [key, value] = keyValue.split(':').map(part => part.trim());
+    result[key] = value;
+    return result;
+  }, {} as Record<string, string>);
 }
 
 const getRequirements = (data: string) => {
   try {
-    const resultObject = stringToObject(data);
+    const resultObject: Record<string, string> = stringToObject(data);
 
     console.log('microblink data', resultObject);
     return {
