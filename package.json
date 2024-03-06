@@ -2,9 +2,9 @@
   "name": "tau-server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server/local.ts",
+  "main": "build/server/local.js",
   "scripts": {
-    "start": "nodemon src/server/local.ts"
+    "start": "nodemon build/server/local.js"
   },
   "keywords": [],
   "author": "",
