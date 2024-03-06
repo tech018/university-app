@@ -18,6 +18,7 @@ const getRequirements = (data: string) => {
       code: httpStatus.OK,
     };
   } catch (error) {
+    console.log('microblink data error', error);
     return {
       message: error,
       code: httpStatus.INTERNAL_SERVER_ERROR,
