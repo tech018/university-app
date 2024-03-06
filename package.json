@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server/local.js",
   "scripts": {
-    "dev": "nodemon dist/server/local.js"
+    "start": "nodemon dist/server/local.js"
   },
   "keywords": [],
   "author": "",
