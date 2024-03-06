@@ -9,13 +9,20 @@ function stringToObject(inputString: string): Record<string, string> {
 }
 
 const getRequirements = (data: string) => {
-  const resultObject: Record<string, string> = stringToObject(data);
+  try {
+    const resultObject: Record<string, string> = stringToObject(data);
 
-  console.log('microblink data', resultObject);
-  return {
-    message: 'success',
-    code: httpStatus.OK,
-  };
+    console.log('microblink data', resultObject);
+    return {
+      message: 'success',
+      code: httpStatus.OK,
+    };
+  } catch (error) {
+    return {
+      message: error,
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    };
+  }
 };
 
 export default {
