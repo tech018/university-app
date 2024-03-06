@@ -2,9 +2,9 @@
   "name": "tau-server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server/local.js",
+  "main": "src/server/local.js",
   "scripts": {
-    "start": "nodemon dist/server/local.js"
+    "start": "nodemon src/server/local.js"
   },
   "keywords": [],
   "author": "",
