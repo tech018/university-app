@@ -2,9 +2,8 @@ import {ContainerTypes, ValidatedRequestSchema} from 'express-joi-validation';
 import * as Joi from 'joi';
 
 export interface RequirementsRequestSchema extends ValidatedRequestSchema {
-  [ContainerTypes.Body]: {
+  [ContainerTypes.Query]: {
     data: string;
-    email: string;
   };
 }
 

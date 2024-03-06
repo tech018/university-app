@@ -6,7 +6,7 @@ const getRequirements = async (
   req: ValidatedRequest<RequirementsRequestSchema>,
   res: Response,
 ) => {
-  const {data} = req.body;
+  const {data} = req.query;
   const datablink = await applicationService.getRequirements(data);
   if (datablink) res.status(datablink.code).json({message: datablink.message});
 };
