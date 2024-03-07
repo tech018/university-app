@@ -12,6 +12,7 @@ function stringToObject(inputString: string): Record<string, string> {
 const getRequirements = async (data: string, email: string) => {
   try {
     const destracted = stringToObject(data);
+    console.log('destracted', destracted);
     const storeblink = await Requirements.create({
       fullName: destracted.Full_name,
       age: destracted.Age,
