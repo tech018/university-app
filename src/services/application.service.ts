@@ -1,9 +1,27 @@
 import httpStatus from 'http-status';
 import Requirements from '../models/requirements';
 
+function stringToObject(inputString: string): Record<string, string> {
+  return inputString.split('>').reduce((result, keyValue) => {
+    const [key, value] = keyValue.split(':').map(part => part.trim());
+    result[key] = value;
+    return result;
+  }, {} as Record<string, string>);
+}
+
 const getRequirements = async (data: string, email: string) => {
   try {
-    const storeblink = await Requirements.create({drLicense: data, email});
+    const destracted = stringToObject(data);
+    const storeblink = await Requirements.create({
+      fullName: destracted.Full_name,
+      age: destracted.Age,
+      address: destracted.Address,
+      dateOfBirth: destracted.Date_of_birth,
+      drLicenseNo: destracted.Document_number,
+      licenseExpiration: destracted.Date_of_expiry,
+      gender: destracted.gender,
+      email,
+    });
     if (storeblink) {
       return {
         message: `Successfully store driver's license`,
