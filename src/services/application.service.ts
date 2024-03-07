@@ -19,7 +19,7 @@ const getRequirements = async (data: string, email: string) => {
       dateOfBirth: destracted.Date_of_birth,
       drLicenseNo: destracted.Document_number,
       licenseExpiration: destracted.Date_of_expiry,
-      gender: destracted.gender,
+      gender: destracted.Sex,
       email,
     });
     if (storeblink) {
