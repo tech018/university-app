@@ -15,7 +15,6 @@ const getRequirements = async (data: string, email: string) => {
     console.log('destracted', destracted);
     const storeblink = await Requirements.create({
       fullName: destracted.Full_name,
-      age: destracted.Age,
       address: destracted.Address,
       dateOfBirth: destracted.Date_of_birth,
       drLicenseNo: destracted.Document_number,

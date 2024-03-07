@@ -7,7 +7,6 @@ class Requirements extends Model {
   public drLicenseNo!: string;
   public email!: string;
   public fullName!: string;
-  public age!: string;
   public address!: string;
   public dateOfBirth!: string;
   public licenseExpiration!: string;
@@ -27,10 +26,6 @@ Requirements.init(
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    age: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
     address: {
       type: DataTypes.STRING,
