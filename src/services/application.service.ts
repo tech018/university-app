@@ -18,6 +18,7 @@ const getRequirements = async (data: string, email: string) => {
       };
     }
   } catch (error) {
+    console.log('error', error);
     return {
       message: error,
       code: httpStatus.INTERNAL_SERVER_ERROR,
