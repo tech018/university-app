@@ -4,7 +4,8 @@
   "description": "",
   "main": "build/server/local.js",
   "scripts": {
-    "start": "nodemon build/server/local.js"
+    "start": "nodemon build/server/local.js",
+    "dev": "nodemon src/server/local.ts"
   },
   "keywords": [],
   "author": "",

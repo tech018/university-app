@@ -6,7 +6,6 @@ import GenerateEmail from './email';
 import OTP from '../models/otp';
 import generator from '../generator/genetator';
 import moment from 'moment';
-import {where} from 'sequelize';
 
 interface RegisterAuth {
   email: string;
@@ -55,7 +54,8 @@ const authLogin = async (email: string, password: string) => {
           generator.accessTokenExpires,
           auth.role,
         ),
-        redirect: 'DashboardScreen',
+        email: auth.email,
+        redirect: 'DASHBOARDSCREEN',
       };
     }
 
@@ -170,17 +170,29 @@ const activateAuth = async ({otp, email}: OTPType) => {
           email,
         },
       });
-      if (deleteOtp)
+
+      const auth = await Auth.findOne({where: {email}});
+      if (auth) {
+        if (deleteOtp)
+          return {
+            code: httpStatus.OK,
+            message: `Successfully activate your account ${email}`,
+            redirect: 'APPLICATIONENTRY',
+            token: generator.generateToken(
+              auth.id,
+              auth.email,
+              generator.accessTokenExpires,
+              auth.role,
+            ),
+            email: auth.email,
+          };
+
         return {
-          code: httpStatus.OK,
-          message: `Successfully activate your account ${email}`,
-          redirect: 'AUTHLOGINSCREEN',
+          code: httpStatus.BAD_REQUEST,
+          message: 'There is something wrong in our end',
+          redirect: 'AuthErrorScreen',
         };
-      return {
-        code: httpStatus.BAD_REQUEST,
-        message: 'There is something wrong in our end',
-        redirect: 'AuthErrorScreen',
-      };
+      }
     }
     return {
       code: httpStatus.BAD_REQUEST,

@@ -34,9 +34,12 @@ const activateAuth = async (
   const {email, otp} = req.query;
   const response = await authService.activateAuth({otp, email});
   if (response)
-    return res
-      .status(response.code)
-      .json({message: response.message, redirect: response.redirect});
+    return res.status(response.code).json({
+      message: response.message,
+      redirect: response.redirect,
+      token: response.token,
+      email: response.email,
+    });
 };
 
 const resendCode = async (
@@ -76,13 +79,11 @@ const changePassword = async (
     newpassword,
   });
   if (response)
-    return res
-      .status(response.code)
-      .json({
-        message: response.message,
-        redirect: response.redirect,
-        authCode: response.authCode,
-      });
+    return res.status(response.code).json({
+      message: response.message,
+      redirect: response.redirect,
+      authCode: response.authCode,
+    });
 };
 
 const authLogin = async (
@@ -96,6 +97,7 @@ const authLogin = async (
       message: response.message,
       redirect: response.redirect,
       token: response.token,
+      email: response.email,
     });
 };
 

@@ -13,6 +13,17 @@ const requirementsSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
+export interface RequirementInfoRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Query]: {
+    email: string;
+  };
+}
+
+const requirementInfoSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
 export default {
   requirementsSchema,
+  requirementInfoSchema,
 };

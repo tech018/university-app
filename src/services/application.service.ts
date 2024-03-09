@@ -12,7 +12,7 @@ function stringToObject(inputString: string): Record<string, string> {
 const getRequirements = async (data: string, email: string) => {
   try {
     const destracted = stringToObject(data);
-    console.log('destracted', destracted);
+
     const storeblink = await Requirements.create({
       fullName: destracted.Full_name,
       address: destracted.Address,
@@ -26,7 +26,8 @@ const getRequirements = async (data: string, email: string) => {
       return {
         message: `Successfully store driver's license`,
         code: httpStatus.OK,
-        redirect: 'AUTHLOGINSCREEN',
+        redirect: 'DASHBOARDSCREEN',
+        data: storeblink,
       };
     } else {
       return {
@@ -45,6 +46,30 @@ const getRequirements = async (data: string, email: string) => {
   }
 };
 
+const getRequirementsInfo = async (email: string) => {
+  const requirement = await Requirements.findOne({where: {email}});
+  try {
+    if (requirement)
+      return {
+        code: httpStatus.OK,
+        userInfo: requirement,
+      };
+
+    return {
+      code: httpStatus.NOT_FOUND,
+      message: `Driver's info not found`,
+    };
+  } catch (error) {
+    console.log('err application service');
+    return {
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+      message: 'General error',
+      redirect: 'APPLICATIONERROR ',
+    };
+  }
+};
+
 export default {
   getRequirements,
+  getRequirementsInfo,
 };

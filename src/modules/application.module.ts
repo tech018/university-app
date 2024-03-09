@@ -1,5 +1,8 @@
 import {ValidatedRequest} from 'express-joi-validation';
-import {RequirementsRequestSchema} from '../schema/application';
+import {
+  RequirementInfoRequestSchema,
+  RequirementsRequestSchema,
+} from '../schema/application';
 import {Response} from 'express';
 import applicationService from '../services/application.service';
 const getRequirements = async (
@@ -7,7 +10,7 @@ const getRequirements = async (
   res: Response,
 ) => {
   const {data, email} = req.body;
-  console.log('request data', data);
+
   const datablink = await applicationService.getRequirements(data, email);
   if (datablink)
     res
@@ -15,6 +18,21 @@ const getRequirements = async (
       .json({message: datablink.message, redirect: datablink.redirect});
 };
 
+const requiremenInfo = async (
+  req: ValidatedRequest<RequirementInfoRequestSchema>,
+  res: Response,
+) => {
+  const {email} = req.query;
+  const response = await applicationService.getRequirementsInfo(email);
+  if (response)
+    return res.status(response.code).json({
+      message: response.message,
+      userInfo: response.userInfo,
+      redirect: response.redirect,
+    });
+};
+
 export default {
   getRequirements,
+  requiremenInfo,
 };
