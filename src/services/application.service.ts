@@ -14,10 +14,10 @@ const getRequirements = async (data: string, email: string) => {
     const destracted = stringToObject(data);
 
     const exist = await Requirements.findOne({where: {email}});
-    if (exist?.email! === null || undefined) {
+    if (exist?.email) {
       return {
         code: httpStatus.BAD_REQUEST,
-        message: `Licese number ${destracted.Document_number} is already in use, please use another driver's license`,
+        message: `License number ${destracted.Document_number} is already in use, please use another driver's license`,
       };
     }
 
