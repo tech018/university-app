@@ -13,6 +13,14 @@ const getRequirements = async (data: string, email: string) => {
   try {
     const destracted = stringToObject(data);
 
+    const exist = await Requirements.findOne({where: {email}});
+    if (exist?.email! === null || undefined) {
+      return {
+        code: httpStatus.BAD_REQUEST,
+        message: `Licese number ${destracted.Document_number} is already in use, please use another driver's license`,
+      };
+    }
+
     const storeblink = await Requirements.create({
       fullName: destracted.Full_name,
       address: destracted.Address,
