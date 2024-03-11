@@ -10,7 +10,7 @@ const getRequirements = async (
   res: Response,
 ) => {
   const {data, email} = req.body;
-
+  console.log('data blink', data);
   const datablink = await applicationService.getRequirements(data, email);
   if (datablink)
     res
