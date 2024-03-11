@@ -18,7 +18,8 @@ const getRequirements = async (data: string, email: string) => {
         email,
       },
     });
-    if (exist?.drLicenseNo === destracted.Document_number.trim()) {
+
+    if (exist && exist.drLicenseNo === destracted.Document_number.trim()) {
       return {
         code: httpStatus.BAD_REQUEST,
         message: `License number ${destracted.Document_number} is already in use, please use another driver's license`,
