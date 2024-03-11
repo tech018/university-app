@@ -18,7 +18,7 @@ const getRequirements = async (data: string, email: string) => {
         email,
       },
     });
-    if (exist?.drLicenseNo !== undefined) {
+    if (exist?.drLicenseNo === undefined || null) {
       return {
         code: httpStatus.BAD_REQUEST,
         message: `License number ${destracted.Document_number} is already in use, please use another driver's license`,
