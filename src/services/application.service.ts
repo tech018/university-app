@@ -73,7 +73,7 @@ const getRequirementsInfo = async (email: string) => {
       message: `Driver's info not found`,
     };
   } catch (error) {
-    console.log('err application service');
+    console.log('err application service', error);
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'General error',
