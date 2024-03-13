@@ -98,6 +98,7 @@ const authLogin = async (
       redirect: response.redirect,
       token: response.token,
       email: response.email,
+      redirectCode: response.redirectCode,
     });
 };
 

@@ -6,6 +6,7 @@ import GenerateEmail from './email';
 import OTP from '../models/otp';
 import generator from '../generator/genetator';
 import moment from 'moment';
+import Requirements from '../models/requirements';
 
 interface RegisterAuth {
   email: string;
@@ -32,6 +33,7 @@ const authLogin = async (email: string, password: string) => {
       };
 
     const auth = await Auth.findOne({where: {email}});
+    const drLicense = await Requirements.findAll({where: {email}});
     if (auth) {
       if (!auth.isVerified) {
         return {
@@ -46,6 +48,15 @@ const authLogin = async (email: string, password: string) => {
           message: 'Invalid login credentials',
         };
       }
+
+      if (drLicense.length <= 0)
+        return {
+          code: httpStatus.BAD_REQUEST,
+          redirect: 'APPLICATIONENTRY',
+          redirectCode: 112,
+          message: `This account doesn't have a account information, please setup your account information`,
+        };
+
       return {
         code: httpStatus.OK,
         token: generator.generateToken(
