@@ -55,6 +55,7 @@ const authLogin = async (email: string, password: string) => {
           redirect: 'APPLICATIONENTRY',
           redirectCode: 112,
           message: `This account doesn't have a account information, please setup your account information`,
+          email,
         };
 
       return {
