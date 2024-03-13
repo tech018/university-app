@@ -52,7 +52,7 @@ const authLogin = async (email: string, password: string) => {
       if (drLicense.length <= 0)
         return {
           code: httpStatus.BAD_REQUEST,
-          redirect: 'APPLICATIONENTRY',
+          redirect: 'DRIVERSLICENSESCREEN',
           redirectCode: 112,
           message: `This account doesn't have a account information, please setup your account information`,
           email,
