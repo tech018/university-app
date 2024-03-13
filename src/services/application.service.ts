@@ -13,6 +13,11 @@ const getRequirements = async (data: string, email: string) => {
   try {
     const destracted = stringToObject(data);
 
+    console.log('destracted', destracted);
+    console.log('data application service', data);
+
+    console.log('email application seriver', email);
+
     const exist = await Requirements.findAll({
       where: {
         drLicenseNo: destracted.Document_number,
@@ -20,6 +25,7 @@ const getRequirements = async (data: string, email: string) => {
     });
 
     if (exist.length > 0) {
+      console.log('cannot store license length error');
       return {
         code: httpStatus.BAD_REQUEST,
         message: `License number ${destracted.Document_number} is already in use, please use another driver's license`,
@@ -43,6 +49,7 @@ const getRequirements = async (data: string, email: string) => {
         data: storeblink,
       };
     } else {
+      console.log('cannot store license error');
       return {
         message: `error store driver's license`,
         code: httpStatus.BAD_REQUEST,
