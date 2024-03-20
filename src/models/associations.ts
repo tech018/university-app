@@ -1,3 +1,4 @@
+import Applications from './application';
 import Auth from './auth';
 import OTP from './otp';
 import Requirements from './requirements';
@@ -13,9 +14,10 @@ class Associations {
       this.associate();
       await Auth.sync();
       await OTP.sync();
+      await Applications.sync();
       await Requirements.sync();
     } catch (error) {
-      console.log('erros', error);
+      console.log('association error', error);
     }
   }
 }

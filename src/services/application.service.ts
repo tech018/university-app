@@ -1,5 +1,7 @@
 import httpStatus from 'http-status';
 import Requirements from '../models/requirements';
+import Applications from '../models/application';
+import {application} from '../schema/application';
 
 function stringToObject(inputString: string): Record<string, string> {
   return inputString.split('>').reduce((result, keyValue) => {
@@ -13,10 +15,11 @@ const getRequirements = async (data: string, email: string) => {
   try {
     const destracted = stringToObject(data);
 
-    console.log('destracted', destracted);
-    console.log('data application service', data);
-
-    console.log('email application seriver', email);
+    if (destracted.Document_number === null || undefined)
+      return {
+        code: httpStatus.BAD_REQUEST,
+        message: `This is not a driver's license card please scan valid driver's license card`,
+      };
 
     const exist = await Requirements.findAll({
       where: {
@@ -25,7 +28,6 @@ const getRequirements = async (data: string, email: string) => {
     });
 
     if (exist.length > 0) {
-      console.log('cannot store license length error');
       return {
         code: httpStatus.BAD_REQUEST,
         message: `License number ${destracted.Document_number} is already in use, please use another driver's license`,
@@ -49,7 +51,6 @@ const getRequirements = async (data: string, email: string) => {
         data: storeblink,
       };
     } else {
-      console.log('cannot store license error');
       return {
         message: `error store driver's license`,
         code: httpStatus.BAD_REQUEST,
@@ -57,7 +58,6 @@ const getRequirements = async (data: string, email: string) => {
       };
     }
   } catch (error) {
-    console.log('error', error);
     return {
       message: error,
       code: httpStatus.INTERNAL_SERVER_ERROR,
@@ -80,7 +80,49 @@ const getRequirementsInfo = async (email: string) => {
       message: `Driver's info not found`,
     };
   } catch (error) {
-    console.log('err application service', error);
+    return {
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+      message: 'General error',
+      redirect: 'APPLICATIONERROR ',
+    };
+  }
+};
+
+const createApplication = async (data: application) => {
+  try {
+    const checkExist = await Applications.findAll({
+      where: {
+        plateNumber: data.plateNumber,
+      },
+    });
+
+    if (checkExist.length > 0)
+      return {
+        code: httpStatus.BAD_REQUEST,
+        message: `Plate Number is already in use please use other plateNumber`,
+        redirect: 0,
+      };
+
+    const storeapp = await Applications.create({
+      email: data.email,
+      vehicleType: data.vehicleType,
+      applicationType: data.applicationType,
+      plateNumber: data.plateNumber,
+    });
+    if (storeapp) {
+      return {
+        message: `Application successfully saved`,
+        code: httpStatus.OK,
+        redirect: 'REQUIREMENTSCREEN',
+      };
+    } else {
+      return {
+        message: `Something wrong with saving your application`,
+        code: httpStatus.BAD_REQUEST,
+        redirect: 'APPLICATIONERROR',
+      };
+    }
+  } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'General error',
@@ -92,4 +134,5 @@ const getRequirementsInfo = async (email: string) => {
 export default {
   getRequirements,
   getRequirementsInfo,
+  createApplication,
 };

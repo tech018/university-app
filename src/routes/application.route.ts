@@ -22,4 +22,12 @@ router
     applicationModule.requiremenInfo,
   );
 
+router
+  .route('/createapplication')
+  .post(
+    validator.body(validation.dataRequirementSchema),
+    genetator.verifyToken,
+    applicationModule.createApplication,
+  );
+
 export default router;

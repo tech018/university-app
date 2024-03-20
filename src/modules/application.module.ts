@@ -1,5 +1,6 @@
 import {ValidatedRequest} from 'express-joi-validation';
 import {
+  DataRequirementsRequestSchema,
   RequirementInfoRequestSchema,
   RequirementsRequestSchema,
 } from '../schema/application';
@@ -32,7 +33,22 @@ const requiremenInfo = async (
     });
 };
 
+const createApplication = async (
+  req: ValidatedRequest<DataRequirementsRequestSchema>,
+  res: Response,
+) => {
+  const {email, plateNumber, applicationType, vehicleType} = req.body;
+  const data = {email, plateNumber, applicationType, vehicleType};
+  const response = await applicationService.createApplication(data);
+  if (response)
+    return res.status(response.code).json({
+      message: response.message,
+      redirect: response.redirect,
+    });
+};
+
 export default {
   getRequirements,
   requiremenInfo,
+  createApplication,
 };
