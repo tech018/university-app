@@ -24,6 +24,8 @@ const requiremenInfo = async (
   res: Response,
 ) => {
   const {email} = req.query;
+
+  console.log('email requirement info', email);
   const response = await applicationService.getRequirementsInfo(email);
   if (response)
     return res.status(response.code).json({

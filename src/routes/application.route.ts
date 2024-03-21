@@ -23,7 +23,7 @@ router
   );
 
 router
-  .route('/createapplication')
+  .route('/create/application')
   .post(
     validator.body(validation.dataRequirementSchema),
     genetator.verifyToken,
