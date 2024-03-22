@@ -3,9 +3,15 @@ import {
   DataRequirementsRequestSchema,
   RequirementInfoRequestSchema,
   RequirementsRequestSchema,
+  uploadSchema,
 } from '../schema/application';
-import {Response} from 'express';
+import {Request, Response} from 'express';
 import applicationService from '../services/application.service';
+import multer from 'multer';
+import Tesseract from 'tesseract.js';
+import cloudinary from '../config/cloudinary';
+import httpStatus from 'http-status';
+
 const getRequirements = async (
   req: ValidatedRequest<RequirementsRequestSchema>,
   res: Response,
@@ -49,8 +55,53 @@ const createApplication = async (
     });
 };
 
+const uploadOfficialReciept = async (req: Request, res: Response) => {
+  try {
+    const plateNumber: string = req.query.plateNumber as string;
+
+    if (req.file) {
+      const {
+        data: {text},
+      } = await Tesseract.recognize(
+        req.file.buffer,
+        'eng', // Language
+        {logger: m => console.log(m)}, // Logger function to see progress
+      );
+
+      const b64: string = Buffer.from(req.file.buffer).toString('base64');
+      let dataURI: string = ('data:' +
+        req.file.mimetype +
+        ';base64,' +
+        b64) as string;
+
+      if (text.includes(plateNumber)) {
+        cloudinary.uploader.upload(
+          dataURI,
+          {public_id: 'tau_file'},
+          function (error: any, result: any) {
+            return res.status(httpStatus.CREATED).json({
+              imageURI: result.uri,
+              message: 'Successfully uploaded image',
+              redirect: 4,
+            });
+          },
+        );
+      } else {
+        res.status(httpStatus.BAD_REQUEST).json({
+          message: `Cannot find Plate Number: ${plateNumber} in this image, Make sure plate number is included in this image`,
+        });
+      }
+    }
+  } catch (error) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .json({message: 'Something wrong in this app'});
+  }
+};
+
 export default {
   getRequirements,
   requiremenInfo,
   createApplication,
+  uploadOfficialReciept,
 };

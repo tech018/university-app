@@ -3,6 +3,7 @@ import {createValidator} from 'express-joi-validation';
 import applicationModule from '../modules/application.module';
 import validation from '../schema/application';
 import genetator from '../generator/genetator';
+import multer from 'multer';
 
 const validator = createValidator();
 const router = express.Router();
@@ -29,5 +30,12 @@ router
     genetator.verifyToken,
     applicationModule.createApplication,
   );
+
+const storage = multer.memoryStorage();
+const upload = multer({storage});
+
+router
+  .route('/oruploader')
+  .post(upload.single('image'), applicationModule.uploadOfficialReciept);
 
 export default router;

@@ -2,7 +2,8 @@ import httpStatus from 'http-status';
 import Requirements from '../models/requirements';
 import Applications from '../models/application';
 import {application} from '../schema/application';
-
+import Tesseract from 'tesseract.js';
+import multer from 'multer';
 function stringToObject(inputString: string): Record<string, string> {
   return inputString.split('>').reduce((result, keyValue) => {
     const [key, value] = keyValue.split(':').map(part => part.trim());
@@ -131,8 +132,29 @@ const createApplication = async (data: application) => {
   }
 };
 
+const CheckPlateNumber = async (
+  photo: string,
+  plateNumber: string,
+): Promise<Boolean> => {
+  const {
+    data: {text},
+  } = await Tesseract.recognize(
+    photo,
+    'eng', // Language
+    {logger: m => console.log(m)}, // Logger function to see progress
+  );
+  if (text.includes(plateNumber)) return true;
+  return false;
+};
+
+const uploadOfficialReciept = async (body: any) => {
+  console.log('body', body);
+  // const data = await CheckPlateNumber()
+};
+
 export default {
   getRequirements,
   getRequirementsInfo,
   createApplication,
+  uploadOfficialReciept,
 };

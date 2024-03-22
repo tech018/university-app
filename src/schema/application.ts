@@ -41,6 +41,30 @@ const dataRequirementSchema = Joi.object({
   vehicleType: Joi.string().required(),
 });
 
+interface ImageData {
+  name: string;
+  type: string;
+  uri: string;
+}
+
+export type ImageArray = [string, ImageData];
+
+const imageDataSchema = {
+  name: 'string',
+  type: 'string',
+  uri: 'string',
+};
+
+export const uploadSchema = {
+  body: Joi.array()
+    .items(
+      Joi.array()
+        .length(2)
+        .ordered(Joi.string().valid('image'), Joi.object(imageDataSchema)),
+    )
+    .required(),
+};
+
 export default {
   requirementsSchema,
   requirementInfoSchema,

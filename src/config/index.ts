@@ -22,6 +22,9 @@ const envVarsSchema = Joi.object()
     PAYPAL_CLIENT_SECRET: Joi.string().required(),
     PAYPAL_MODE: Joi.string().required(),
     TOKEN_MINUTES_EXPIRE: Joi.number().required(),
+    CLOUDINARY_NAME: Joi.string().required(),
+    CLOUDINARY_KEY: Joi.string().required(),
+    CLOUDINARY_SECRET: Joi.string().required(),
   })
   .unknown();
 
@@ -54,5 +57,10 @@ export default {
   },
   jwt: {
     jwtminutesexpire: envVars.TOKEN_MINUTES_EXPIRE,
+  },
+  cloudinary: {
+    name: envVars.CLOUDINARY_NAME,
+    key: envVars.CLOUDINARY_KEY,
+    secret: envVars.CLOUDINARY_SECRET,
   },
 };

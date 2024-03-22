@@ -8,6 +8,7 @@ class Applications extends Model {
   public vehicleType!: string;
   public plateNumber!: string;
   public email!: string;
+  public imageURI!: string;
 }
 
 Applications.init(
@@ -25,6 +26,10 @@ Applications.init(
       allowNull: false,
     },
     email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    imageURI: {
       type: DataTypes.STRING,
       allowNull: false,
     },
