@@ -4,6 +4,6 @@ cloudinary.config({
   cloud_name: config.cloudinary.name,
   api_key: config.cloudinary.key,
   api_secret: config.cloudinary.secret,
-}).im;
+});
 
 export default cloudinary;
