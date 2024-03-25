@@ -55,16 +55,6 @@ const createApplication = async (
     });
 };
 
-function findTextInOCR(textToFind: string, ocrText: string) {
-  var returnValue = false;
-
-  if (ocrText.indexOf(textToFind) !== -1) {
-    returnValue = true;
-  }
-
-  return returnValue;
-}
-
 const uploadOfficialReciept = async (req: Request, res: Response) => {
   try {
     const plateNumber: string = req.query.plateNumber as string;
@@ -87,16 +77,19 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
       console.log('text', text);
 
       if (text.includes(plateNumber)) {
-        cloudinary.uploader.upload(
+        await cloudinary.uploader.upload(
           dataURI,
           {public_id: 'tau_file'},
           function (error: any, result: any) {
             console.log('result', result);
-            return res.status(httpStatus.CREATED).json({
-              imageURI: result.secure_url,
-              message: 'Successfully uploaded image',
-              redirect: 4,
-            });
+            console.log('error cloudinary', error);
+            if (result) {
+              return res.status(httpStatus.CREATED).json({
+                imageURI: result.secure_url,
+                message: 'Successfully uploaded image',
+                redirect: 4,
+              });
+            }
           },
         );
       } else {
