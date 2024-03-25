@@ -110,6 +110,7 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
+    console.log('error', error);
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({message: 'Something wrong in this app'});
