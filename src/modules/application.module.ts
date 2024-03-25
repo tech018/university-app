@@ -74,8 +74,6 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
         logger: m => console.log(m),
       });
 
-      console.log('text', text);
-
       if (text.includes(plateNumber)) {
         await cloudinary.uploader.upload(
           dataURI,
@@ -85,7 +83,7 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
             console.log('error cloudinary', error);
             if (result) {
               return res.status(httpStatus.CREATED).json({
-                imageURI: result.secure_url,
+                imageURI: result?.uri,
                 message: 'Successfully uploaded image',
                 redirect: 4,
               });
