@@ -109,6 +109,7 @@ const createApplication = async (data: application) => {
       vehicleType: data.vehicleType,
       applicationType: data.applicationType,
       plateNumber: data.plateNumber,
+      imageURI: data.imageURI,
     });
     if (storeapp) {
       return {
@@ -132,29 +133,8 @@ const createApplication = async (data: application) => {
   }
 };
 
-const CheckPlateNumber = async (
-  photo: string,
-  plateNumber: string,
-): Promise<Boolean> => {
-  const {
-    data: {text},
-  } = await Tesseract.recognize(
-    photo,
-    'eng', // Language
-    {logger: m => console.log(m)}, // Logger function to see progress
-  );
-  if (text.includes(plateNumber)) return true;
-  return false;
-};
-
-const uploadOfficialReciept = async (body: any) => {
-  console.log('body', body);
-  // const data = await CheckPlateNumber()
-};
-
 export default {
   getRequirements,
   getRequirementsInfo,
   createApplication,
-  uploadOfficialReciept,
 };

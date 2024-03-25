@@ -28,6 +28,7 @@ export interface application {
   plateNumber: string;
   applicationType: string;
   vehicleType: string;
+  imageURI: string;
 }
 
 export interface DataRequirementsRequestSchema extends ValidatedRequestSchema {
@@ -39,6 +40,7 @@ const dataRequirementSchema = Joi.object({
   plateNumber: Joi.string().required(),
   applicationType: Joi.string().required(),
   vehicleType: Joi.string().required(),
+  imageURI: Joi.string().required(),
 });
 
 interface ImageData {

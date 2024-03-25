@@ -4,6 +4,7 @@ import applicationModule from '../modules/application.module';
 import validation from '../schema/application';
 import genetator from '../generator/genetator';
 import multer from 'multer';
+import path from 'path';
 
 const validator = createValidator();
 const router = express.Router();
@@ -32,7 +33,19 @@ router
   );
 
 const storage = multer.memoryStorage();
-const upload = multer({storage});
+const upload = multer({
+  storage,
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+      return callback(new Error('Only images are allowed'));
+    }
+    callback(null, true);
+  },
+  // limits: {
+  //   fileSize: 1024 * 1024,
+  // },
+});
 
 router
   .route('/oruploader')
