@@ -74,29 +74,27 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
         logger: m => console.log(m),
       });
 
-      console.log('text', text);
-
-      // if (text.includes(plateNumber)) {
-      //   await cloudinary.uploader.upload(
-      //     dataURI,
-      //     {public_id: 'tau_file'},
-      //     function (error: any, result: any) {
-      //       console.log('result', result);
-      //       console.log('error cloudinary', error);
-      //       if (result) {
-      //         return res.status(httpStatus.CREATED).json({
-      //           imageURI: result?.uri,
-      //           message: 'Successfully uploaded image',
-      //           redirect: 4,
-      //         });
-      //       }
-      //     },
-      //   );
-      // } else {
-      //   return res.status(httpStatus.BAD_REQUEST).json({
-      //     message: `Cannot find Plate Number: ${plateNumber} in this image, Make sure plate number is included in this image`,
-      //   });
-      // }
+      if (text.includes(plateNumber)) {
+        await cloudinary.uploader.upload(
+          dataURI,
+          {public_id: 'tau_file'},
+          function (error: any, result: any) {
+            console.log('result', result);
+            console.log('error cloudinary', error);
+            if (result) {
+              return res.status(httpStatus.CREATED).json({
+                imageURI: result?.uri,
+                message: 'Successfully uploaded image',
+                redirect: 4,
+              });
+            }
+          },
+        );
+      } else {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          message: `Cannot find Plate Number: ${plateNumber} in this image, Make sure plate number is included in this image`,
+        });
+      }
     } else {
       return res.status(httpStatus.BAD_REQUEST).json({
         message: `Image file upload not found`,
