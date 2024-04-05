@@ -17,7 +17,6 @@ const getRequirements = async (
   res: Response,
 ) => {
   const {data, email} = req.body;
-  console.log('data blink', data);
   const datablink = await applicationService.getRequirements(data, email);
   if (datablink)
     res
@@ -31,7 +30,6 @@ const requiremenInfo = async (
 ) => {
   const {email} = req.query;
 
-  console.log('email requirement info', email);
   const response = await applicationService.getRequirementsInfo(email);
   if (response)
     return res.status(response.code).json({
@@ -83,7 +81,7 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
             console.log('error cloudinary', error);
             if (result) {
               return res.status(httpStatus.CREATED).json({
-                imageURI: result?.uri,
+                imageURI: result.secure_url,
                 message: 'Successfully uploaded image',
                 redirect: 4,
               });
@@ -108,9 +106,23 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
   }
 };
 
+const getUserApplications = async (
+  req: ValidatedRequest<RequirementInfoRequestSchema>,
+  res: Response,
+) => {
+  const {email} = req.query;
+  const response = await applicationService.getUserApplications(email);
+  if (response)
+    return res.status(response.code).json({
+      message: response.message,
+      allApp: response.data,
+    });
+};
+
 export default {
   getRequirements,
   requiremenInfo,
   createApplication,
   uploadOfficialReciept,
+  getUserApplications,
 };

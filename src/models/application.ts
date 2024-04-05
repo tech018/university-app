@@ -33,6 +33,14 @@ Applications.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // status: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
+    // dateofApproval: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
   },
   {
     sequelize,

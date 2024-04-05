@@ -25,6 +25,14 @@ router
   );
 
 router
+  .route('/alluserapplications')
+  .get(
+    validator.query(validation.requirementInfoSchema),
+    genetator.verifyToken,
+    applicationModule.getUserApplications,
+  );
+
+router
   .route('/create/application')
   .post(
     validator.body(validation.dataRequirementSchema),

@@ -104,6 +104,8 @@ const createApplication = async (data: application) => {
         redirect: 0,
       };
 
+    console.log('data create app', data);
+
     const storeapp = await Applications.create({
       email: data.email,
       vehicleType: data.vehicleType,
@@ -125,6 +127,7 @@ const createApplication = async (data: application) => {
       };
     }
   } catch (error) {
+    console.log('error create app', error);
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'General error',
@@ -133,8 +136,31 @@ const createApplication = async (data: application) => {
   }
 };
 
+const getUserApplications = async (email: string) => {
+  try {
+    const checkApplications = await Applications.findAll({where: {email}});
+    if (checkApplications.length <= 0)
+      return {
+        message: `There is no application in this account ${email}`,
+        code: httpStatus.NOT_FOUND,
+        data: [],
+      };
+
+    return {
+      data: checkApplications,
+      code: httpStatus.OK,
+    };
+  } catch (error) {
+    return {
+      message: 'Internal server error',
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    };
+  }
+};
+
 export default {
   getRequirements,
   getRequirementsInfo,
   createApplication,
+  getUserApplications,
 };
