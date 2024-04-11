@@ -1,12 +1,14 @@
-import httpStatus from 'http-status';
-import Requirements from '../models/requirements';
-import Applications from '../models/application';
-import {application} from '../schema/application';
-import Tesseract from 'tesseract.js';
-import multer from 'multer';
+import httpStatus from "http-status";
+import Requirements from "../models/requirements";
+import Applications from "../models/application";
+import { application } from "../schema/application";
+import Tesseract from "tesseract.js";
+import multer from "multer";
+import genetator from "../generator/genetator";
+import moment from "moment";
 function stringToObject(inputString: string): Record<string, string> {
-  return inputString.split('>').reduce((result, keyValue) => {
-    const [key, value] = keyValue.split(':').map(part => part.trim());
+  return inputString.split(">").reduce((result, keyValue) => {
+    const [key, value] = keyValue.split(":").map((part) => part.trim());
     result[key] = value;
     return result;
   }, {} as Record<string, string>);
@@ -48,27 +50,27 @@ const getRequirements = async (data: string, email: string) => {
       return {
         message: `Successfully store driver's license`,
         code: httpStatus.OK,
-        redirect: 'DASHBOARDSCREEN',
+        redirect: "DASHBOARDSCREEN",
         data: storeblink,
       };
     } else {
       return {
         message: `error store driver's license`,
         code: httpStatus.BAD_REQUEST,
-        redirect: 'AUTHLOGINSCREEN',
+        redirect: "AUTHLOGINSCREEN",
       };
     }
   } catch (error) {
     return {
       message: error,
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      redirect: 'AuthErrorScreen',
+      redirect: "AuthErrorScreen",
     };
   }
 };
 
 const getRequirementsInfo = async (email: string) => {
-  const requirement = await Requirements.findOne({where: {email}});
+  const requirement = await Requirements.findOne({ where: { email } });
   try {
     if (requirement)
       return {
@@ -83,8 +85,8 @@ const getRequirementsInfo = async (email: string) => {
   } catch (error) {
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: 'General error',
-      redirect: 'APPLICATIONERROR ',
+      message: "General error",
+      redirect: "APPLICATIONERROR ",
     };
   }
 };
@@ -104,41 +106,41 @@ const createApplication = async (data: application) => {
         redirect: 0,
       };
 
-    console.log('data create app', data);
-
     const storeapp = await Applications.create({
       email: data.email,
       vehicleType: data.vehicleType,
       applicationType: data.applicationType,
       plateNumber: data.plateNumber,
       imageURI: data.imageURI,
+      dateofApproval: "",
+      status: "pending",
     });
     if (storeapp) {
       return {
         message: `Application successfully saved`,
         code: httpStatus.OK,
-        redirect: 'REQUIREMENTSCREEN',
+        redirect: "REQUIREMENTSCREEN",
       };
     } else {
       return {
         message: `Something wrong with saving your application`,
         code: httpStatus.BAD_REQUEST,
-        redirect: 'APPLICATIONERROR',
+        redirect: "APPLICATIONERROR",
       };
     }
   } catch (error) {
-    console.log('error create app', error);
+    console.log("error create app", error);
     return {
       code: httpStatus.INTERNAL_SERVER_ERROR,
-      message: 'General error',
-      redirect: 'APPLICATIONERROR ',
+      message: "General error",
+      redirect: "APPLICATIONERROR ",
     };
   }
 };
 
 const getUserApplications = async (email: string) => {
   try {
-    const checkApplications = await Applications.findAll({where: {email}});
+    const checkApplications = await Applications.findAll({ where: { email } });
     if (checkApplications.length <= 0)
       return {
         message: `There is no application in this account ${email}`,
@@ -152,7 +154,29 @@ const getUserApplications = async (email: string) => {
     };
   } catch (error) {
     return {
-      message: 'Internal server error',
+      message: "Internal server error",
+      code: httpStatus.INTERNAL_SERVER_ERROR,
+    };
+  }
+};
+
+const getApplications = async () => {
+  try {
+    const application = await Applications.findAll();
+
+    if (application.length > 0)
+      return {
+        data: application,
+        code: httpStatus.OK,
+      };
+
+    return {
+      message: "No records",
+      code: httpStatus.NOT_FOUND,
+    };
+  } catch (error) {
+    return {
+      message: "Internal server error",
       code: httpStatus.INTERNAL_SERVER_ERROR,
     };
   }
@@ -163,4 +187,5 @@ export default {
   getRequirementsInfo,
   createApplication,
   getUserApplications,
+  getApplications,
 };

@@ -1,52 +1,56 @@
-import express from 'express';
-import {createValidator} from 'express-joi-validation';
-import applicationModule from '../modules/application.module';
-import validation from '../schema/application';
-import genetator from '../generator/genetator';
-import multer from 'multer';
-import path from 'path';
+import express from "express";
+import { createValidator } from "express-joi-validation";
+import applicationModule from "../modules/application.module";
+import validation from "../schema/application";
+import genetator from "../generator/genetator";
+import multer from "multer";
+import path from "path";
 
 const validator = createValidator();
 const router = express.Router();
 
 router
-  .route('/requirements')
+  .route("/requirements")
   .post(
     validator.body(validation.requirementsSchema),
-    applicationModule.getRequirements,
+    applicationModule.getRequirements
   );
 
 router
-  .route('/getdriverinfo')
+  .route("/getdriverinfo")
   .get(
     validator.query(validation.requirementInfoSchema),
     genetator.verifyToken,
-    applicationModule.requiremenInfo,
+    applicationModule.requiremenInfo
   );
 
 router
-  .route('/alluserapplications')
+  .route("/alluserapplications")
   .get(
     validator.query(validation.requirementInfoSchema),
     genetator.verifyToken,
-    applicationModule.getUserApplications,
+    applicationModule.getUserApplications
   );
 
 router
-  .route('/create/application')
+  .route("/create/application")
   .post(
     validator.body(validation.dataRequirementSchema),
     genetator.verifyToken,
-    applicationModule.createApplication,
+    applicationModule.createApplication
   );
+
+router
+  .route("/applications")
+  .get(genetator.verifyToken, applicationModule.getApplications);
 
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   fileFilter: function (req, file, callback) {
     var ext = path.extname(file.originalname);
-    if (ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-      return callback(new Error('Only images are allowed'));
+    if (ext !== ".png" && ext !== ".jpg" && ext !== ".gif" && ext !== ".jpeg") {
+      return callback(new Error("Only images are allowed"));
     }
     callback(null, true);
   },
@@ -56,7 +60,7 @@ const upload = multer({
 });
 
 router
-  .route('/oruploader')
-  .post(upload.single('image'), applicationModule.uploadOfficialReciept);
+  .route("/oruploader")
+  .post(upload.single("image"), applicationModule.uploadOfficialReciept);
 
 export default router;

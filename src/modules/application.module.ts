@@ -1,34 +1,32 @@
-import {ValidatedRequest} from 'express-joi-validation';
+import { ValidatedRequest } from "express-joi-validation";
 import {
   DataRequirementsRequestSchema,
   RequirementInfoRequestSchema,
   RequirementsRequestSchema,
-  uploadSchema,
-} from '../schema/application';
-import {Request, Response} from 'express';
-import applicationService from '../services/application.service';
-import multer from 'multer';
-import Tesseract from 'tesseract.js';
-import cloudinary from '../config/cloudinary';
-import httpStatus from 'http-status';
+} from "../schema/application";
+import { Request, Response } from "express";
+import applicationService from "../services/application.service";
+import Tesseract from "tesseract.js";
+import cloudinary from "../config/cloudinary";
+import httpStatus from "http-status";
 
 const getRequirements = async (
   req: ValidatedRequest<RequirementsRequestSchema>,
-  res: Response,
+  res: Response
 ) => {
-  const {data, email} = req.body;
+  const { data, email } = req.body;
   const datablink = await applicationService.getRequirements(data, email);
   if (datablink)
     res
       .status(datablink.code)
-      .json({message: datablink.message, redirect: datablink.redirect});
+      .json({ message: datablink.message, redirect: datablink.redirect });
 };
 
 const requiremenInfo = async (
   req: ValidatedRequest<RequirementInfoRequestSchema>,
-  res: Response,
+  res: Response
 ) => {
-  const {email} = req.query;
+  const { email } = req.query;
 
   const response = await applicationService.getRequirementsInfo(email);
   if (response)
@@ -41,10 +39,11 @@ const requiremenInfo = async (
 
 const createApplication = async (
   req: ValidatedRequest<DataRequirementsRequestSchema>,
-  res: Response,
+  res: Response
 ) => {
-  const {email, plateNumber, applicationType, vehicleType, imageURI} = req.body;
-  const data = {email, plateNumber, applicationType, vehicleType, imageURI};
+  const { email, plateNumber, applicationType, vehicleType, imageURI } =
+    req.body;
+  const data = { email, plateNumber, applicationType, vehicleType, imageURI };
   const response = await applicationService.createApplication(data);
   if (response)
     return res.status(response.code).json({
@@ -58,35 +57,35 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
     const plateNumber: string = req.query.plateNumber as string;
 
     if (req.file) {
-      const b64: string = Buffer.from(req.file.buffer).toString('base64');
-      let dataURI: string = ('data:' +
+      const b64: string = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI: string = ("data:" +
         req.file.mimetype +
-        ';base64,' +
+        ";base64," +
         b64) as string;
 
-      const {buffer} = req.file;
+      const { buffer } = req.file;
 
       const {
-        data: {text},
-      } = await Tesseract.recognize(buffer, 'eng', {
-        logger: m => console.log(m),
+        data: { text },
+      } = await Tesseract.recognize(buffer, "eng", {
+        logger: (m) => console.log(m),
       });
 
       if (text.includes(plateNumber)) {
         await cloudinary.uploader.upload(
           dataURI,
-          {public_id: 'tau_file'},
+          { public_id: "tau_file" },
           function (error: any, result: any) {
-            console.log('result', result);
-            console.log('error cloudinary', error);
+            console.log("result", result);
+            console.log("error cloudinary", error);
             if (result) {
               return res.status(httpStatus.CREATED).json({
                 imageURI: result.secure_url,
-                message: 'Successfully uploaded image',
+                message: "Successfully uploaded image",
                 redirect: 4,
               });
             }
-          },
+          }
         );
       } else {
         return res.status(httpStatus.BAD_REQUEST).json({
@@ -99,23 +98,32 @@ const uploadOfficialReciept = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({message: 'Something wrong in this app'});
+      .json({ message: "Something wrong in this app" });
   }
 };
 
 const getUserApplications = async (
   req: ValidatedRequest<RequirementInfoRequestSchema>,
-  res: Response,
+  res: Response
 ) => {
-  const {email} = req.query;
+  const { email } = req.query;
   const response = await applicationService.getUserApplications(email);
   if (response)
     return res.status(response.code).json({
       message: response.message,
       allApp: response.data,
+    });
+};
+
+const getApplications = async (req: Request, res: Response) => {
+  const response = await applicationService.getApplications();
+  if (response)
+    return res.status(response.code).json({
+      message: response.message,
+      applications: response.data,
     });
 };
 
@@ -125,4 +133,5 @@ export default {
   createApplication,
   uploadOfficialReciept,
   getUserApplications,
+  getApplications,
 };

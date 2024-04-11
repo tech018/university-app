@@ -1,6 +1,6 @@
 // src/models/User.ts
-import {DataTypes, Model} from 'sequelize';
-import sequelize from '../config/db';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../config/db";
 
 class Applications extends Model {
   public id!: number;
@@ -9,6 +9,8 @@ class Applications extends Model {
   public plateNumber!: string;
   public email!: string;
   public imageURI!: string;
+  public status!: string;
+  public dateofApproval!: string;
 }
 
 Applications.init(
@@ -33,19 +35,19 @@ Applications.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // status: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    // },
-    // dateofApproval: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    // },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    dateofApproval: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
   },
   {
     sequelize,
-    modelName: 'Applications',
-  },
+    modelName: "Applications",
+  }
 );
 
 export default Applications;

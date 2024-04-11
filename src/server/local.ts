@@ -1,7 +1,8 @@
 import express from "express";
 import bootstrap from "./bootstrap";
 import config from "../config";
-
+import http, { Server } from "http";
+import SocketServer from "../socket/index";
 import Associations from "../models/associations";
 
 const startServer = async () => {
@@ -11,7 +12,12 @@ const startServer = async () => {
   await Associations.sync();
 
   const message = `Server Started at port ${config.port}`;
-  app.listen(config.port, () => {
+
+  const server = http.createServer(app);
+
+  SocketServer(server);
+
+  server.listen(config.port, () => {
     console.log(message);
   });
 };
